@@ -1,0 +1,52 @@
+#!/bin/bash
+
+_stash_join() {
+	local IFS="$1"
+	shift
+	echo "$*"
+}
+
+_stash_linked() {
+	stash status | sed -n 's/\(.*\): linked.*$/\1/p'
+}
+
+_stash_unlinked() {
+	stash status | sed -n 's/\(.*\): not linked.*$/\1/p'
+}
+
+_stash_broken() {
+	stash status | sed -n 's/\(.*\): .*, [0-9]\+ broken link.*$/\1/p'
+}
+
+_stash_missing() {
+	stash status | sed -n 's/\(.*\): linked, [0-9]\+ missing link.*$/\1/p'
+}
+_stash_all() {
+	stash status | sed -n 's/\(.*\): .*/\1/p'
+}
+
+_stash() {
+	local options="-h --help -v --version --stash --work-tree"
+	local commands="link unlink status rm cd version help"
+	local prev="${COMP_WORDS[$((COMP_CWORD - 1))]}"
+	local cur="${COMP_WORDS[$COMP_CWORD]}"
+	case "$prev" in
+		--stash|--work-tree)
+			COMPREPLY=($(compgen -d -- "$cur"))
+			;;
+		link)
+			COMPREPLY=($(compgen -W "$(_stash_unlinked) $(_stash_missing)" -- "$cur"))
+			;;
+		unlink)
+			COMPREPLY=($(compgen -W "$(_stash_linked)" -- "$cur"))
+			;;
+		rm|cd|status)
+			COMPREPLY=($(compgen -W "$(_stash_all)" -- "$cur"))
+			;;
+		*)
+			COMPREPLY=($(compgen -W "${options[*]} ${commands[*]}" -- "$cur"))
+			;;
+	esac
+}
+
+complete -F _stash stash 

@@ -1,0 +1,152 @@
+.TH STASH 1 "date" "version 0.0.1"
+
+.SH NAME
+
+stash - a link management utility
+
+.SH SYNOPSIS
+
+.B stash
+[\fB\-\-work\-tree\fR \fI<path>\fR] [\fB \-\-stash \fI<path>\fR] \fB<command>\fR [\fI<args>\fR]
+
+.SH DESCRIPTION
+
+\fBstash\fR manages symbolic links from multiple source directories into a
+single target directory. In the rest of the document, the target directory is
+called the \fIwork tree\fR; source directories are called \fIpackages\fR; and
+the packages are stored in a directory called the \fIstash\fR.
+
+.SH OPTIONS
+
+.TP
+\fB\-\-work-tree\fR \fI<path>\fR
+Set the work tree to use for the current call to \fBstash\fR.
+
+.TP
+\fB\-\-stash\fR \fI<path>\fR
+Set the stash directory to use for the current call to \fBstash\fR.
+
+.SH EXIT STATUS
+
+.B stash 
+returns 1 in case of error, 0 otherwise.
+
+.SH COMMANDS
+
+.TP
+.B link \fI<package-name>\fR
+Link the package \fI<package-name>\fR into the work tree. Create a symlink in the work tree for all the files present in the package \fI<package-name>\fR.
+
+.TP
+.B unlink \fI<package-name>\fR
+Unlink the package \fI<package-name>\fR. Removes all symlinks from the work tree that points to the package \fI<package-name>\fR.
+
+.TP
+.B status [\fI<package-name>\fR]
+Display the status of the package \fI<package-name>\fR, or of all packages if no argument is provided. The status of the package can be one of the following:
+.RS
+.IP - 2
+linked, if the package is currently correctly linked into the work tree;
+.IP -
+unlinked, if the package is not currently linked into the work tree;
+.IP -
+1 missing link or \fIn\fR missing links, if the package is linked into the work tree but one or more links are missing;
+.IP -
+1 broken link or \fIn\fR broken links, if the package is not linked into the work tree but one or more broken links leads to the package directory.
+.RE
+
+.TP
+.B rm\fR
+Remove a package from the stash directory.
+
+.TP
+.B cd \fI<package-name>\fR
+Change the current working directory to the directory of the package <package-name> in the stash.
+
+.TP
+.B version\fR
+Show stash version.
+
+.TP
+.B help\fR
+Show stash usage information, as well as current value for STASH_DIR and STASH_WORK_TREE environment variable.
+
+.SH EXAMPLES
+
+.TP
+Install version 1.0 of app into a stash 
+.br
+.B > cp src/app-1.0
+.br
+.B > make install PREFIX=$STASH_DIR/app-1.0
+
+.TP
+Link the newly install app package into the work tree 
+.br
+.B stash link app-1.0
+
+.TP
+Install a new version of app 
+.br
+.B > cp src/app-1.1
+.br
+.B > make install PREFIX=$STASH_DIR/app-1.1
+
+.TP
+Unlink the previous verison of app, and link the new one
+.br
+.B > stash unlink app-1.0
+.br
+.B > stash link app-1.1
+
+.TP
+Now two version of app are installed but only one is inlked into the work tree
+.br
+.B > stash status
+.br
+app-1.0 not linked
+.br
+app-1.1 linked
+
+.TP
+If the new version is statisfying, remove the previous install
+.br
+.B > stash rm app-1.0
+
+.TP
+Otherwise relink the previous version and uninstall the new one
+.br
+.B > stash unlink app-1.1
+.br
+.B > stash link app-1.0
+.br
+.B > stash rm app-1.1
+
+.SH FILES
+
+.TP
+.B /usr/local\fR
+The default work tree directory
+
+.TP
+.B /usr/local/stash\fR
+The default stash dir where packages are stored
+
+.SH ENVIRONMENT
+.I 
+
+.TP
+.I STASH_DIR
+Sets the default stash directories.
+
+.TP
+.I STASH_WORK_TREE
+Sets the default work tree.
+
+.SH AUTHOR
+
+.SH REPORTING BUGS
+
+.SH SEE ALSO
+.BR bash (1)
+.BR ln (1)
