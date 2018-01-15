@@ -1,6 +1,6 @@
 PREFIX ?= /usr
 BINDIR ?= $(PREFIX)/bin
-MANDIR ?= $(PREFIX)/share/man
+MANDIR ?= $(PREFIX)/share/man/man1
 COMPDIR ?= $(PREFIX)/share/bash-completion/completions
 
 all:
