@@ -77,7 +77,7 @@ stash_link_sub() {
 			ln -s "$stash_file" "$wt_file"
 		fi
 
-	done < <(find "$stash_dir" -type f,l)
+	done < <(find "$stash_dir" -type f;find "$stash_dir" -type l)
 }
 
 
@@ -143,7 +143,7 @@ stash_status_single() {
 		if [[ ! "$(readlink "$link_path")" =~ "$stash_dir" ]]; then
 			nr_missing=$((nr_missing + 1))
 		fi
-	done < <(find "$stash_dir" -type f,l)
+	done < <(find "$stash_dir" -type f;find "$stash_dir" -type l)
 	local nr_broken=$(($nr_links - $nr_files - $nr_missing))
 
 	echo -n "$stash_name"
@@ -252,8 +252,8 @@ stash_usage_usage() {
 
 stash_usage() {
 	echo "$APP_NAME, a link management utility"
-	echo "stash stash: $STASH_DIR"
-	echo "work tree: $STASH_WORK_TREE"
+	echo "stash stash: $STASH"
+	echo "work tree: $WORK_TREE"
 	echo "usage:"
 	stash_link_usage
 	stash_unlink_usage
@@ -268,7 +268,7 @@ while [ $# -ne 0 -a $is_cmd -eq 0 ]; do
 	case $1 in
 		--stash)
 			shift
-			STASH_DIR="$1"
+			STASH="$1"
 			shift
 			;;
 		--work-tree)
